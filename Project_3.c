@@ -51,7 +51,11 @@
 
 #include "adc.h"
 
-#define RESOLUTION 50	// In uVolts
+/* Number of steps in 16 bits */
+#define RESOLUTION 65536
+
+/* Select Project to Compile*/
+#define PART2 1
 
 int main(void)
 {
@@ -62,37 +66,78 @@ int main(void)
     BOARD_InitBootPeripherals();
     BOARD_InitDebugConsole();
 
-	uint16_t ADC_in, mVolts;
+	/* Local Variables */
+    uint16_t ADC_in, mVolts;
 
-	ADC0_init(); /* Configure ADC0 */
+	/* Configure ADC0 */
+	ADC0_init();
+
 	while (1)
 	{
-		ADC0->SC1[0] = 0; 								/* start conversion on channel 0 */
-		while(!(ADC0->SC1[0] & ADC_SC1_COCO_MASK)) { }  /* wait for conversion complete */
-		ADC_in = ADC0->R[0]; 							/* read conversion result and clear COCO flag */
+		/************************************
+		 * Set AIEN to 1 to enable interrupt
+		 * Set DIFF to 0b0 for single
+		 * Set ADCH to 0b00000 for ADC_SE0
+		 * Set register to 0x40
+		 **********************************/
+		ADC0->SC1[0] = 0x40;
+		while(!(ADC0->SC1[0] & 0x80)) { }
+		ADC_in = ADC0->R[0];
 
-		mVolts = ADC_in * RESOLUTION / 1000 ; 			/* Digital output in mV */
+		/* Analog Input in V */
+		mVolts = ((ADC_in*3.3*1000)/RESOLUTION);
+
 		delay(250);
-		printf("Voltage: %d\r", mVolts);
-
+		printf("Voltage: %d mV\r", mVolts);
 	}
 }
 
     void ADC0_init(void)
     {
-		SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK; 	/* clock to PORTB */
-		PORTB->PCR[20] = 0;						/* PTE20 = analog input J10-1 */
-		SIM->SCGC6 |= SIM_SCGC6_ADC0_MASK ; 	/* clock to ADC0 */
-		ADC0->SC2 &= ~ADC_SC2_ADTRG_MASK; 		/* software trigger */
+		/* clock to PORTE */
+		SIM->SCGC5 |= 0x2000;
 
-		/* clock divide by 4, long sample time, single ended 16 bit, bus clock */
-		ADC0->CFG1 = ADC_CFG1_ADIV(4) | ADC_CFG1_ADLSMP_MASK  | ADC_CFG1_MODE_MASK | ~ADC_CFG1_ADICLK_MASK;
-		ADC0->CFG2 = 0 ; 						/* Set default longest sample time */
+		/*******************************************
+		 * PTE20 = analog input J10-1
+		 * ENABLE PULL DOWN BY SETTING 0b10
+		 * Use default Pin MUX set pins 10-8 to 0
+		 * set pins 19 - 16 to 0b0011 for DMA enable
+		 * set pin 24 to 1 to enable ISR/DMA flag
+		 * Set to 0x1030000 for DMA settings
+		 * or set to 0x3 for non-DMA
+		 *******************************************/
+#if PART2
+		PORTE->PCR[20] = 0x3;
+
+#else
+		PORTE->PCR[20] = 0x1030000;
+#endif
+		/* Enable ADC0 clock*/
+		SIM->SCGC6 |= 0x8000000;
+
+		/***********************************************
+		 * Set register bit 6 to 0 for software trigger
+		 ***********************************************/
+		ADC0->SC2 &= ~0x40;
+
+		/*******************************************
+		 * Set to 12 MHz ADC clock
+		 * Set bit 7 to 0 for normal power
+		 * Set bit 6-5 to 0b01 for 12MHz clock
+		 * Set bit 4 to 0 for short sample
+		 * Set bits 3-2 to 0b11 for 16bit resolution
+		 * Set bits 1-0 to 0b01 for 24MHz clock
+		 * Select 0x2D for the settings above
+		 *******************************************/
+		ADC0->CFG1 = 0x2D;
+
+		/* Set default longest sample time */
+		ADC0->CFG2 = 0 ;
     }
 
     /******************* delay () - Start *******************/
 
-    void delay (uint16_t num)	/* Delay n milliseconds @ 20.97 MHZ clock*/
+    void delay (uint16_t num)	/* Delay n times @ 12 MHZ clock*/
      {
      	for(uint16_t i =0; i < num ; i++)
      	{
