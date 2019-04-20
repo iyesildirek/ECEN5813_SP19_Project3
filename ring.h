@@ -18,9 +18,7 @@
 *
 */
 
-#define FRDM 0
-#ifndef RING_H
-#define RING_H
+#define FRDM 1
 
 #if !FRDM
 
@@ -65,4 +63,3 @@ uint16_t randomValue ( uint32_t , uint16_t );
 
 //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} Functions Prototype - End {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
-#endif
