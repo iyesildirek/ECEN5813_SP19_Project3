@@ -22,5 +22,4 @@
 #define BUFFER_SIZE_PART_4 128
 
 /*******Function Prototypes*******/
-
 void DMA0_init(void);

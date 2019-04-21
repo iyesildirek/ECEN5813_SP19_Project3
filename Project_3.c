@@ -53,7 +53,7 @@
 #include "dma.h"
 
 /* Select Project to Compile*/
-#define PART2 1
+#define PART2 0
 #define PART3 1
 #define PART4 1
 #define PART5 1
@@ -76,6 +76,12 @@ int main(void)
 	/* Configure D15*/
 	gpio_config();
 
+#if PART3
+	DMA0_init();
+#else
+
+#endif
+
 	while (1)
 	{
 		/************************************
@@ -85,15 +91,12 @@ int main(void)
 		 * Set register to 0x40
 		 **********************************/
 		ADC0->SC1[0] = 0x40;
+#if PART2
 		while(!(ADC0->SC1[0] & 0x80))
 		{
-#if PART2
 			/* Toggle PTE1 LED */
 	    	PTE->PTOR |= 0x02;
-#else
-
-#endif
-	    }
+		}
 		/* Write to register */
 		ADC_in = ADC0->R[0];
 
@@ -102,7 +105,28 @@ int main(void)
 
 		delay(250);
 		printf("Voltage: %d mV\r", mVolts);
-	}
+
+#else
+		DMAMUX0->CHCFG[0] &= 0X80; //disable DMA
+		/*Start DMA */
+		DMA0->DMA[0].DCR |= (1<<16);
+		DMAMUX0->CHCFG[0] |= 0x80; //enable DMA
+
+		while(!(DMA0->DMA[0].DSR_BCR & 0x1000000))
+		{
+		}
+
+		/* Analog Input in V */
+		mVolts = ((ADC0->R[0]*3.3*1000)/RESOLUTION);
+
+		delay(250);
+		printf("Voltage: %d mV\r", mVolts);
+		DMAMUX0->CHCFG[0] &= 0X80; //disable DMA
+		DMA0->DMA[0].DSR_BCR &= (1<<16);
+		DMAMUX0->CHCFG[0] |= 0x80; //enable DMA
+#endif
+		}
+
 }
 
     void ADC0_init(void)
@@ -149,7 +173,7 @@ int main(void)
 
     /******************* delay () - Start *******************/
 
-    void delay (uint16_t num)	/* Delay n times @ 12 MHZ clock*/
+    void delay (uint16_t num)	/* Delay n times @ 24 MHZ clock*/
      {
      	for(uint16_t i =0; i < num ; i++)
      	{
