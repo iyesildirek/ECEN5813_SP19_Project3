@@ -18,6 +18,9 @@
 *
 */
 
+/* Number of steps in 16 bits */
+#define RESOLUTION 65536
+
 /*******Header Files*******/
 #include <stdio.h>
 #include "board.h"
@@ -31,5 +34,4 @@
 /*******Function Prototypes*******/
   void ADC0_init(void);
   void delay (uint16_t);
-
-
+  void gpio_config(void);

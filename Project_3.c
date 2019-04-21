@@ -39,23 +39,24 @@
 *
 *****************************************************************************/
 /**
-* @file Project_2.c
+* @file Project_3.c
 * @brief This source file contains a c program perform ADC readings and utilizes 
 * the board DMA to store the readings into a buffer.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 20 2019
-* @version 1.0
+* @date April 21 2019
+* @version 1.1
 *
 */
 
 #include "adc.h"
-
-/* Number of steps in 16 bits */
-#define RESOLUTION 65536
+#include "dma.h"
 
 /* Select Project to Compile*/
 #define PART2 1
+#define PART3 1
+#define PART4 1
+#define PART5 1
 
 int main(void)
 {
@@ -72,6 +73,9 @@ int main(void)
 	/* Configure ADC0 */
 	ADC0_init();
 
+	/* Configure D15*/
+	gpio_config();
+
 	while (1)
 	{
 		/************************************
@@ -81,7 +85,16 @@ int main(void)
 		 * Set register to 0x40
 		 **********************************/
 		ADC0->SC1[0] = 0x40;
-		while(!(ADC0->SC1[0] & 0x80)) { }
+		while(!(ADC0->SC1[0] & 0x80))
+		{
+#if PART2
+			/* Toggle PTE1 LED */
+	    	PTE->PTOR |= 0x02;
+#else
+
+#endif
+	    }
+		/* Write to register */
 		ADC_in = ADC0->R[0];
 
 		/* Analog Input in V */
@@ -99,16 +112,14 @@ int main(void)
 
 		/*******************************************
 		 * PTE20 = analog input J10-1
-		 * ENABLE PULL DOWN BY SETTING 0b10
 		 * Use default Pin MUX set pins 10-8 to 0
 		 * set pins 19 - 16 to 0b0011 for DMA enable
 		 * set pin 24 to 1 to enable ISR/DMA flag
 		 * Set to 0x1030000 for DMA settings
-		 * or set to 0x3 for non-DMA
+		 * or set to 0x0 for non-DMA
 		 *******************************************/
 #if PART2
-		PORTE->PCR[20] = 0x3;
-
+		PORTE->PCR[20] = 0x0;
 #else
 		PORTE->PCR[20] = 0x1030000;
 #endif
@@ -121,15 +132,16 @@ int main(void)
 		ADC0->SC2 &= ~0x40;
 
 		/*******************************************
-		 * Set to 12 MHz ADC clock
+		 * 1.5 MHz ADC clock Settings
+		 * Bus clock is 24MHz per manual table 5.1
 		 * Set bit 7 to 0 for normal power
-		 * Set bit 6-5 to 0b01 for 12MHz clock
+		 * Set bit 6-5 to 0b11 to divide clock by 8
 		 * Set bit 4 to 0 for short sample
 		 * Set bits 3-2 to 0b11 for 16bit resolution
-		 * Set bits 1-0 to 0b01 for 24MHz clock
-		 * Select 0x2D for the settings above
+		 * Set bits 1-0 to 0b01 to divide 24MHz clock by 2
+		 * Select 0x6D for the settings above
 		 *******************************************/
-		ADC0->CFG1 = 0x2D;
+		ADC0->CFG1 = 0x6D;
 
 		/* Set default longest sample time */
 		ADC0->CFG2 = 0 ;
@@ -147,3 +159,17 @@ int main(void)
      	}
      }
     /******************* delay () - End *********************/
+
+    void gpio_config(void)
+    {
+    	/****************************************************
+    	 * D15 Settings for LED output
+    	 * Enable Port E clock set bit 13 to 1
+    	 * Enable PTE1, set bits 10-8 to 0b001 for alt 1
+    	 * Set pin as Digital Output 0b01
+    	 * Set pin to inverse (turn on LED)
+    	 ***************************************************/
+    	SIM->SCGC5 |= 0x2000;
+    	PORTE->PCR[1] = 0x100;
+    	PTE->PDDR |= 0x02;
+    }
