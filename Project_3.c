@@ -45,155 +45,81 @@
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
 * @date April 21 2019
-* @version 1.1
+* @version 1.2
 *
 */
 
-#include "adc.h"
-#include "dma.h"
 
-/* Select Project to Compile*/
-#define PART2 0
-#define PART3 1
-#define PART4 1
-#define PART5 1
+#include "dma.h"
+#include "adc.h"
+
+#define DOUBLE_BUFFER 0
+
+/******************************************************************************
+ * 			Variables used by DMA driver  fsl_dma driver ver 2.0.1
+ ******************************************************************************/
+
+dma_handle_t DMA_Handle;						// Structure variable includes DMA Address, call back function and parameter.
+uint32_t ADC_Result = (uint32_t) (&ADC0->R[0]);	// Variable holding address of ADC result register "ADC0->R[0]"
+
+
+/*******************************************************************************
+ * 									main() - Start
+ *******************************************************************************/
 
 int main(void)
 {
 
-  	/* Init board hardware. */
-    BOARD_InitBootPins();
-    BOARD_InitBootClocks();
-    BOARD_InitBootPeripherals();
+	BOARD_InitPins();
+    BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
+    ADC0_init();
+    gpio_config();
 
-	/* Local Variables */
-    uint16_t ADC_in, mVolts;
+	dma_transfer_config_t transferConfig;
+	uint16_t mVolts;
+	uint32_t destAddr[DESTINATION_BUFF_LENGTH];
+    uint32_t i = 0;
 
-	/* Configure ADC0 */
-	ADC0_init();
+    DMA_Config(transferConfig, destAddr, &DMA_Handle);
 
-	/* Configure D15*/
-	gpio_config();
+    /******************************************************************************
+     ************** Prepare DMA for transferring data from ADC to memory **********
+     ************** 			using DMA driver functions				 **********
+     ******************************************************************************/
 
-#if PART3
-	DMA0_init();
-#else
+    DMA_PrepareTransfer(&transferConfig, (void *)ADC_Result, sizeof(uint32_t),
+    		(void *)destAddr, sizeof(uint32_t), sizeof(destAddr),
+                            kDMA_PeripheralToMemory);
 
-#endif
 
-	while (1)
-	{
-		/************************************
-		 * Set AIEN to 1 to enable interrupt
-		 * Set DIFF to 0b0 for single
-		 * Set ADCH to 0b00000 for ADC_SE0
-		 * Set register to 0x40
-		 **********************************/
-		ADC0->SC1[0] = 0x40;
-#if PART2
-		while(!(ADC0->SC1[0] & 0x80))
+    /****************************************************
+     * This loop is just for initial testing the outcome.
+     * Will be modified for the rest of the project.
+     * **************************************************/
+
+    while(1)
+    {
+		DMA_SubmitTransfer(&DMA_Handle, &transferConfig, kDMA_NoOptions/*kDMA_EnableInterrupt*/);
+		DMA_StartTransfer(&DMA_Handle);
+
+		/******************************************************************************/
+
+
+    	PRINTF("\r\n\n\r\nDMA ADC to memory transfer.\r\n\n");  /* Print destination buffer */
+
+    	for (i = 0; i < DESTINATION_BUFF_LENGTH; i++)		/* Loop for DMA to transfer ADC result to destination buffer */
 		{
-			/* Toggle PTE1 LED */
-	    	PTE->PTOR |= 0x02;
-		}
-		/* Write to register */
-		ADC_in = ADC0->R[0];
-
-		/* Analog Input in V */
-		mVolts = ((ADC_in*3.3*1000)/RESOLUTION);
-
-		delay(250);
-		printf("Voltage: %d mV\r", mVolts);
-
-#else
-		DMAMUX0->CHCFG[0] &= 0X80; //disable DMA
-		/*Start DMA */
-		DMA0->DMA[0].DCR |= (1<<16);
-		DMAMUX0->CHCFG[0] |= 0x80; //enable DMA
-
-		while(!(DMA0->DMA[0].DSR_BCR & 0x1000000))
-		{
+			ADC_Read();
+    		mVolts = ((destAddr[i]*3.3*1000)/RESOLUTION);	/* Analog Input in mV */
+			printf(" %d - Voltage: %-4d mV\r\n", i, mVolts);
+			delay(250);
 		}
 
-		/* Analog Input in V */
-		mVolts = ((ADC0->R[0]*3.3*1000)/RESOLUTION);
-
-		delay(250);
-		printf("Voltage: %d mV\r", mVolts);
-		DMAMUX0->CHCFG[0] &= 0X80; //disable DMA
-		DMA0->DMA[0].DSR_BCR &= (1<<16);
-		DMAMUX0->CHCFG[0] |= 0x80; //enable DMA
-#endif
-		}
-
+    }
 }
 
-    void ADC0_init(void)
-    {
-		/* clock to PORTE */
-		SIM->SCGC5 |= 0x2000;
+/*******************************************************************************
+ * 									main() - End
+ *******************************************************************************/
 
-		/*******************************************
-		 * PTE20 = analog input J10-1
-		 * Use default Pin MUX set pins 10-8 to 0
-		 * set pins 19 - 16 to 0b0011 for DMA enable
-		 * set pin 24 to 1 to enable ISR/DMA flag
-		 * Set to 0x1030000 for DMA settings
-		 * or set to 0x0 for non-DMA
-		 *******************************************/
-#if PART2
-		PORTE->PCR[20] = 0x0;
-#else
-		PORTE->PCR[20] = 0x1030000;
-#endif
-		/* Enable ADC0 clock*/
-		SIM->SCGC6 |= 0x8000000;
-
-		/***********************************************
-		 * Set register bit 6 to 0 for software trigger
-		 ***********************************************/
-		ADC0->SC2 &= ~0x40;
-
-		/*******************************************
-		 * 1.5 MHz ADC clock Settings
-		 * Bus clock is 24MHz per manual table 5.1
-		 * Set bit 7 to 0 for normal power
-		 * Set bit 6-5 to 0b11 to divide clock by 8
-		 * Set bit 4 to 0 for short sample
-		 * Set bits 3-2 to 0b11 for 16bit resolution
-		 * Set bits 1-0 to 0b01 to divide 24MHz clock by 2
-		 * Select 0x6D for the settings above
-		 *******************************************/
-		ADC0->CFG1 = 0x6D;
-
-		/* Set default longest sample time */
-		ADC0->CFG2 = 0 ;
-    }
-
-    /******************* delay () - Start *******************/
-
-    void delay (uint16_t num)	/* Delay n times @ 24 MHZ clock*/
-     {
-     	for(uint16_t i =0; i < num ; i++)
-     	{
-     		for (uint16_t j = 0; j< 2000; j++)
-     		{
-     		}
-     	}
-     }
-    /******************* delay () - End *********************/
-
-    void gpio_config(void)
-    {
-    	/****************************************************
-    	 * D15 Settings for LED output
-    	 * Enable Port E clock set bit 13 to 1
-    	 * Enable PTE1, set bits 10-8 to 0b001 for alt 1
-    	 * Set pin as Digital Output 0b01
-    	 * Set pin to inverse (turn on LED)
-    	 ***************************************************/
-    	SIM->SCGC5 |= 0x2000;
-    	PORTE->PCR[1] = 0x100;
-    	PTE->PDDR |= 0x02;
-    }

@@ -13,25 +13,23 @@
 * @brief This header file provides the adc prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 20 2019
-* @version 1.0
+* @date April 23 2019
+* @version 1.1
 *
 */
+
+/*==================================================================*/
+
+#include "dma.h"
+
+/*==================================================================*/
 
 /* Number of steps in 16 bits */
 #define RESOLUTION 65536
 
-/*******Header Files*******/
-#include <stdio.h>
-#include "board.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-#include "clock_config.h"
-#include "MKL25Z4.h"
-#include "fsl_debug_console.h"
-#include "MKL25Z4.h"
 
 /*******Function Prototypes*******/
   void ADC0_init(void);
   void delay (uint16_t);
   void gpio_config(void);
+  uint32_t ADC_Read(void);

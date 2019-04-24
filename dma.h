@@ -13,13 +13,37 @@
 * @brief This header file provides the dma prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 21 2019
-* @version 1.0
+* @date April 23 2019
+* @version 1.1
 *
 */
 
-#define BUFFER_SIZE_PART_3 256
-#define BUFFER_SIZE_PART_4 128
+#include "board.h"
+#include "fsl_debug_console.h"
+#include "fsl_dma.h"
+#include "fsl_dmamux.h"
+#include "pin_mux.h"
+#include "clock_config.h"
+#include "MKL25Z4.h"
+#include <stdlib.h>
 
-/*******Function Prototypes*******/
-void DMA0_init(void);
+/*******************************************************************************
+ * 									Definitions
+ ******************************************************************************/
+#if !DOUBLE_BUFFER
+
+#define DESTINATION_BUFF_LENGTH 10
+
+#endif
+
+#define DESTINATION_BUFF_LENGTH_1 128
+#define SOURCE_BUFF_LENGTH 1
+#define DMA_CHANNEL 0
+#define DMA_SOURCE kDmaRequestMux0ADC0		// Source of data to DMA (here ADC)
+
+
+/*******************************************************************************
+ * 						User Defined Function Prototypes
+ ******************************************************************************/
+
+  void DMA_Config (dma_transfer_config_t, uint32_t*, dma_handle_t*);
