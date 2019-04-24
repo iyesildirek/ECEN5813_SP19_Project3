@@ -32,7 +32,7 @@
  ******************************************************************************/
 #if !DOUBLE_BUFFER
 
-#define DESTINATION_BUFF_LENGTH 10
+#define DESTINATION_BUFF_LENGTH 256
 
 #endif
 
@@ -47,3 +47,4 @@
  ******************************************************************************/
 
   void DMA_Config (dma_transfer_config_t, uint32_t*, dma_handle_t*);
+
