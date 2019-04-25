@@ -13,8 +13,8 @@
 * @brief This source file contains a c program to implement a DMA functions.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 23 2019
-* @version 1.1
+* @date April 25 2019
+* @version 1.2
 *
 */
 
@@ -24,7 +24,7 @@
 
 /*==================================================================*/
 
- void DMA_Config(dma_transfer_config_t transfer_Config, uint32_t* Destination_Addr, dma_handle_t* DMA_Handle)
+ void DMA_Config(dma_handle_t* DMA_Handle, dma_transfer_config_t transferConfig)
  {
 	    /* Configure DMAMUX */
 
@@ -36,5 +36,4 @@
 
 	    DMA_Init(DMA0);
 	    DMA_CreateHandle(DMA_Handle, DMA0, DMA_CHANNEL);
-
  }

@@ -33,3 +33,4 @@
   void delay (uint16_t);
   void gpio_config(void);
   uint32_t ADC_Read(void);
+  void led(void);
