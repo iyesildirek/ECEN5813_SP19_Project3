@@ -13,8 +13,8 @@
 * @brief This header file provides the dma prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 23 2019
-* @version 1.1
+* @date April 25 2019
+* @version 1.2
 *
 */
 
@@ -30,21 +30,32 @@
 /*******************************************************************************
  * 									Definitions
  ******************************************************************************/
+#define DOUBLE_BUFFER 1
+
 #if !DOUBLE_BUFFER
 
-#define DESTINATION_BUFF_LENGTH 256
+#define DESTINATION_BUFF_LENGTH 16
+
+#else
+
+#define DESTINATION_BUFF_LENGTH 8
 
 #endif
 
-#define DESTINATION_BUFF_LENGTH_1 128
 #define SOURCE_BUFF_LENGTH 1
 #define DMA_CHANNEL 0
-#define DMA_SOURCE kDmaRequestMux0ADC0		// Source of data to DMA (here ADC)
-
+#define DMA_SOURCE kDmaRequestMux0ADC0		// Source of data to DMA (ADC)
 
 /*******************************************************************************
  * 						User Defined Function Prototypes
  ******************************************************************************/
 
-  void DMA_Config (dma_transfer_config_t, uint32_t*, dma_handle_t*);
+  void DMA_Config (dma_handle_t*, dma_transfer_config_t);
 
+#if DOUBLE_BUFFER
+
+  void DMA0_IRQHandler(dma_transfer_config_t);
+
+#endif
+
+  /****************************************************************************/

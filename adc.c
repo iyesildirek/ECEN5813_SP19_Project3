@@ -13,8 +13,8 @@
 * @brief This source file contains a c program to implement a DMA functions.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 23 2019
-* @version 1.1
+* @date April 25 2019
+* @version 1.2
 *
 */
 
@@ -107,5 +107,24 @@ uint32_t ADC_Read(void)
  	SIM->SCGC5 |= SIM_SCGC5_PORTE_MASK;	//0x2000
  	PORTE->PCR[1] = 0x100;
  	PTE->PDDR |= 0x02;
+
+ 	/****************************************
+ 	 * Configuring Blue LED on board to toggle
+ 	 * sync with DMA interrupt assertions after
+ 	 * completion of each block transfer.
+ 	 ****************************************/
+
+	SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK;	/* enable clock to Port D [0x1000]*/
+	PORTD->PCR[1] = 0x100;				/* Port D pin 1 as GPIO. */
+	PTD->PDDR |= 0x02;					/* Configure pin 1 as output pin */
+
+ }
+
+/*---------------------------------- led () -Start --------------------*/
+
+ /* Toggling Blue LED */
+ void led(void)
+ {
+	 PTD->PTOR |= 0x02;
  }
 // /*========================= gpio_config() - End ========================*/
