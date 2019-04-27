@@ -14,8 +14,8 @@
 * and displays content of memory in terms of 32 bit words in hexadecimal format.
 *
 * @author Ismail Yesildirek & Bijan Kianian
-* @date April 24 2019
-* @version 1.0
+* @date April 27 2019
+* @version 1.1
 *
 */
 
