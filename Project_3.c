@@ -14,7 +14,7 @@
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
 * @date April 27 2019
-* @version 1.4
+* @version 1.5
 *
 */
 
@@ -31,8 +31,14 @@ uint32_t ADC_Result = (uint32_t) (&ADC0->R[0]);	// Variable holding address of A
 dma_transfer_config_t transferConfig;
 
 uint32_t *p_destAddress = NULL;					// Pointer used to swap buffers within DMA ISR.
-uint32_t* Buffer_1 ;
-uint32_t* Buffer_2 ;
+
+uint32_t Buffer_1[DESTINATION_BUFF_LENGTH];
+
+#if DOUBLE_BUFFER
+
+uint32_t Buffer_2[DESTINATION_BUFF_LENGTH];
+
+#endif
 
 bool Swap_Buffers = true;
 
@@ -51,14 +57,6 @@ int main(void)
     uint32_t mVolts;
     uint32_t i = 0;
     uint32_t numOfBytes = 4 * DESTINATION_BUFF_LENGTH;		// 4 bytes per transfer (x32 bits)
-
-    Buffer_1 = (uint32_t*)calloc(DESTINATION_BUFF_LENGTH , sizeof(uint32_t));
-
-#if DOUBLE_BUFFER
-
-    Buffer_2 = (uint32_t*)calloc(DESTINATION_BUFF_LENGTH , sizeof(uint32_t));
-
-#endif
 
     DMA_Config(&DMA_Handle, transferConfig);
 
@@ -105,7 +103,7 @@ int main(void)
 			{
 				ADC_Read();
 
-				delay(500);
+				delay(10);
 				mVolts = (*(Buffer_1+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
 				mem_display((uint32_t*)Buffer_1,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
 			}
@@ -125,15 +123,15 @@ int main(void)
 			{
 				ADC_Read();
 
-				delay(500);
+				delay(10);
 				mVolts = (*(Buffer_2+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
 				mem_display((uint32_t*)Buffer_2,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
 			}
     	}
 
-    	printf("\n\rPress 'Enter' to exit, or any other key to continue...\n\n\r");
+    	printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
 
-    	if(getchar() == '\r')
+    	if(getchar() == 'x')
     	{
 			printf("\n\rGood Bye!\n\n\r");
 			break;
@@ -147,9 +145,9 @@ int main(void)
 
 #else
 
-		printf("\n\rPress 'Enter' to exit, or any other key to continue...\n\n\r");
+		printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
 
-		if(getchar() == '\r')
+		if(getchar() == 'x')
 		{
 			printf("\n\rGood Bye!\n\n\r");
 			break;
