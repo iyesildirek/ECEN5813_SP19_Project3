@@ -117,7 +117,7 @@ uint32_t ADC_Read(void)
 	SIM->SCGC5 |= SIM_SCGC5_PORTD_MASK;	/* enable clock to Port D [0x1000]*/
 	PORTD->PCR[1] = 0x100;				/* Port D pin 1 as GPIO. */
 	PTD->PDDR |= 0x02;					/* Configure pin 1 as output pin */
-
+	PTD->PDOR |= 0x02; 					/* Starting from 'OFF' state*/
  }
 
 /*---------------------------------- led () -Start --------------------*/

@@ -1,0 +1,115 @@
+
+		########################################
+		#    ADC to memory transfer via DMA.   #
+		########################################
+
+Buffer 1:
+========
+
+ Index 	  Address         Value(h)        Value(d)     voltage (mV)
+ -----	------------    -------------    ----------   -------------- 
+   0	 0x1ffff144       0x00004c46        19526           983
+   1	 0x1ffff148       0x0000561c        22044           1110
+   2	 0x1ffff14c       0x00005aeb        23275           1171
+   3	 0x1ffff150       0x0000659e        26014           1309
+   4	 0x1ffff154       0x00006582        25986           1308
+   5	 0x1ffff158       0x0000649f        25759           1297
+   6	 0x1ffff15c       0x000067ec        26604           1339
+   7	 0x1ffff160       0x00005bd0        23504           1183
+
+Press 'Enter' to exit, or any other key to continue...
+
+Buffer 2:
+========
+
+ Index 	  Address         Value(h)        Value(d)     voltage (mV)
+ -----	------------    -------------    ----------   -------------- 
+   0	 0x1ffff170       0x000049a7        18855           949
+   1	 0x1ffff174       0x00004060        16480           829
+   2	 0x1ffff178       0x00004076        16502           830
+   3	 0x1ffff17c       0x00003f11        16145           812
+   4	 0x1ffff180       0x000041e2        16866           849
+   5	 0x1ffff184       0x00003dc1        15809           796
+   6	 0x1ffff188       0x00004878        18552           934
+   7	 0x1ffff18c       0x00004484        17540           883
+
+Press 'Enter' to exit, or any other key to continue...
+
+
+		########################################
+		#    ADC to memory transfer via DMA.   #
+		########################################
+
+Buffer 1:
+========
+
+ Index 	  Address         Value(h)        Value(d)     voltage (mV)
+ -----	------------    -------------    ----------   -------------- 
+   0	 0x1ffff144       0x00004759        18265           919
+   1	 0x1ffff148       0x0000469a        18074           910
+   2	 0x1ffff14c       0x00004dd8        19928           1003
+   3	 0x1ffff150       0x0000541b        21531           1084
+   4	 0x1ffff154       0x00005e3b        24123           1214
+   5	 0x1ffff158       0x00005f78        24440           1230
+   6	 0x1ffff15c       0x000055f0        22000           1107
+   7	 0x1ffff160       0x00005a9c        23196           1168
+
+Press 'Enter' to exit, or any other key to continue...
+
+Buffer 2:
+========
+
+ Index 	  Address         Value(h)        Value(d)     voltage (mV)
+ -----	------------    -------------    ----------   -------------- 
+   0	 0x1ffff170       0x00005ae8        23272           1171
+   1	 0x1ffff174       0x000064a8        25768           1297
+   2	 0x1ffff178       0x000068e8        26856           1352
+   3	 0x1ffff17c       0x00005744        22340           1124
+   4	 0x1ffff180       0x0000511a        20762           1045
+   5	 0x1ffff184       0x000048f9        18681           940
+   6	 0x1ffff188       0x00004242        16962           854
+   7	 0x1ffff18c       0x00003bdc        15324           771
+
+Press 'Enter' to exit, or any other key to continue...
+
+
+		########################################
+		#    ADC to memory transfer via DMA.   #
+		########################################
+
+Buffer 1:
+========
+
+ Index 	  Address         Value(h)        Value(d)     voltage (mV)
+ -----	------------    -------------    ----------   -------------- 
+   0	 0x1ffff144       0x00004ecc        20172           1015
+   1	 0x1ffff148       0x00004b00        19200           966
+   2	 0x1ffff14c       0x00005c54        23636           1190
+   3	 0x1ffff150       0x0000635c        25436           1280
+   4	 0x1ffff154       0x00006b3d        27453           1382
+   5	 0x1ffff158       0x000071f8        29176           1469
+   6	 0x1ffff15c       0x000059dc        23004           1158
+   7	 0x1ffff160       0x00004c52        19538           983
+
+Press 'Enter' to exit, or any other key to continue...
+
+Buffer 2:
+========
+
+ Index 	  Address         Value(h)        Value(d)     voltage (mV)
+ -----	------------    -------------    ----------   -------------- 
+   0	 0x1ffff170       0x000055c5        21957           1105
+   1	 0x1ffff174       0x00005b28        23336           1175
+   2	 0x1ffff178       0x00006470        25712           1294
+   3	 0x1ffff17c       0x00006ac2        27330           1376
+   4	 0x1ffff180       0x00007048        28744           1447
+   5	 0x1ffff184       0x00005f3e        24382           1227
+   6	 0x1ffff188       0x00005858        22616           1138
+   7	 0x1ffff18c       0x00004da1        19873           1000
+
+Press 'Enter' to exit, or any other key to continue...
+
+
+Good Bye!
+
+User exit / continue option added.

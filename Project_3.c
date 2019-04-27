@@ -13,8 +13,8 @@
 * @brief This header file provides the adc prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 25 2019
-* @version 1.3
+* @date April 27 2019
+* @version 1.4
 *
 */
 
@@ -31,12 +31,11 @@ uint32_t ADC_Result = (uint32_t) (&ADC0->R[0]);	// Variable holding address of A
 dma_transfer_config_t transferConfig;
 
 uint32_t *p_destAddress = NULL;					// Pointer used to swap buffers within DMA ISR.
-
 uint32_t* Buffer_1 ;
 uint32_t* Buffer_2 ;
 
+bool Swap_Buffers = true;
 
-bool Swap_Buffers = false;
 /*******************************************************************************
  * 									main() - Start
  *******************************************************************************/
@@ -50,8 +49,8 @@ int main(void)
     gpio_config();
 
     uint32_t mVolts;
-	uint32_t numOfBytes = 4 * DESTINATION_BUFF_LENGTH;		// 4 bytes per transfer (x32 bits)
     uint32_t i = 0;
+    uint32_t numOfBytes = 4 * DESTINATION_BUFF_LENGTH;		// 4 bytes per transfer (x32 bits)
 
     Buffer_1 = (uint32_t*)calloc(DESTINATION_BUFF_LENGTH , sizeof(uint32_t));
 
@@ -68,32 +67,20 @@ int main(void)
      ************** 			using DMA driver functions				 **********
      ******************************************************************************/
 
+    p_destAddress = Buffer_1;
+    DMA_SetTransferConfig(DMA0, DMA_CHANNEL, &transferConfig);
+
 #if DOUBLE_BUFFER
 
-    DMA_SetTransferConfig(DMA0, DMA_CHANNEL, &transferConfig);
     DMA_EnableInterrupts(DMA0, DMA_CHANNEL);
-    DMA_HandleIRQ(&DMA_Handle);
-    DMA0_IRQHandler(transferConfig);
-    NVIC_EnableIRQ(DMA0_IRQn);
-
-#else
-
-    p_destAddress = Buffer_1;
 
 #endif
 
-    /****************************************************
-     * This loop is just for initial testing the outcome.
-     * Will be modified for the rest of the project.
-     * **************************************************/
-
     while(1)
     {
-
     	DMA_PrepareTransfer(&transferConfig, (void *)ADC_Result, sizeof(uint32_t),
     	    		p_destAddress, sizeof(uint32_t), numOfBytes,
     	                            kDMA_PeripheralToMemory);
-
 
     	DMA_SubmitTransfer(&DMA_Handle, &transferConfig, kDMA_EnableInterrupt);
 		DMA_StartTransfer(&DMA_Handle);
@@ -102,38 +89,54 @@ int main(void)
 		 ******* Report preparation *********
 		 ************************************/
 
-		printf("\n\r\t\t########################################\n");
-    	printf("\r\t\t#    ADC to memory transfer via DMA.   #\n");  /* Print destination buffer */
-    	printf("\r\t\t########################################\r\n\n");
-    	printf("Buffer 1:\n\r");
-    	printf("========\n\r");
-    	printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
-    	printf("\r -----	------------    -------------    ----------   -------------- \n");
-    	for (i = 0; i < DESTINATION_BUFF_LENGTH; i++)		/* Loop for DMA transferring ADC
-    														 * results to the destination buffer */
-		{
-    		ADC_Read();
-			delay(250);
+    	if(p_destAddress == Buffer_1)
+    	{
+			printf("\n\r\t\t########################################\n");
+			printf("\r\t\t#    ADC to memory transfer via DMA.   #\n");  /* Print destination buffer */
+			printf("\r\t\t########################################\r\n\n");
 
-			mVolts = (*(Buffer_1+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
-			mem_display((uint32_t*)Buffer_1,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
+			printf("Buffer 1:\n\r");
+			printf("========\n\r");
+			printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
+			printf("\r -----	------------    -------------    ----------   -------------- \n");
 
-		}
+			for (i = 0; i < DESTINATION_BUFF_LENGTH; i++)		/* Loop for DMA transferring ADC
+																 * results to the destination buffer */
+			{
+				ADC_Read();
+
+				delay(500);
+				mVolts = (*(Buffer_1+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
+				mem_display((uint32_t*)Buffer_1,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
+			}
+    	}
+
 #if DOUBLE_BUFFER
 
-    	printf("\n\r+++++++++++++++++\n\r");
-    	printf("Buffer 2:\n\r");
-    	printf("========\n\r");
+    	else
+    	{
+			printf("Buffer 2:\n\r");
+			printf("========\n\r");
+			printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
+			printf("\r -----	------------    -------------    ----------   -------------- \n");
 
-    	for (i = 0; i < DESTINATION_BUFF_LENGTH; i++)		/* Loop for DMA transferring ADC
-    	    														 * results to the destination buffer */
-		{
-			ADC_Read();
+			for (i = 0; i < DESTINATION_BUFF_LENGTH; i++)		/* Loop for DMA transferring ADC
+																 * results to the destination buffer */
+			{
+				ADC_Read();
 
-			delay(250);
-			mVolts = (*(Buffer_2+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
-			mem_display((uint32_t*)Buffer_2,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
+				delay(500);
+				mVolts = (*(Buffer_2+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
+				mem_display((uint32_t*)Buffer_2,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
+			}
+    	}
 
+    	printf("\n\rPress 'Enter' to exit, or any other key to continue...\n\n\r");
+
+    	if(getchar() == '\r')
+    	{
+			printf("\n\rGood Bye!\n\n\r");
+			break;
 		}
     }
 
@@ -143,6 +146,14 @@ int main(void)
     free(Buffer_1);
 
 #else
+
+		printf("\n\rPress 'Enter' to exit, or any other key to continue...\n\n\r");
+
+		if(getchar() == '\r')
+		{
+			printf("\n\rGood Bye!\n\n\r");
+			break;
+		}
 	}
 
     free(Buffer_1);
@@ -159,9 +170,9 @@ int main(void)
  * 					    DMA Interrupt Service Routine - Start
  *******************************************************************************/
 
-void DMA0_IRQHandler(dma_transfer_config_t transferConfig)
+void DMA0_IRQHandler(void)
 {
-    DMA_ClearChannelStatusFlags(DMA0, DMA_CHANNEL, kDMA_TransactionsDoneFlag);	    /* Clear transaction done interrupt flag */
+   DMA_ClearChannelStatusFlags(DMA0, DMA_CHANNEL, kDMA_TransactionsDoneFlag);	    /* Clear transaction done interrupt flag */
 
     if(Swap_Buffers == false)
     {
@@ -182,4 +193,3 @@ void DMA0_IRQHandler(dma_transfer_config_t transferConfig)
  * 					    DMA Interrupt Service Routine - End
  *******************************************************************************/
 #endif
-
