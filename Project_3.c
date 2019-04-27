@@ -14,7 +14,7 @@
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
 * @date April 27 2019
-* @version 1.4
+* @version 1.5
 *
 */
 
@@ -22,6 +22,10 @@
 #include "adc.h"
 #include "mem_display.h"
 
+/* Select Project to Compile*/
+#define PART2 1
+
+#if !PART2
 /******************************************************************************
  * 			Variables used by DMA driver  fsl_dma driver ver 2.0.1
  ******************************************************************************/
@@ -192,4 +196,44 @@ void DMA0_IRQHandler(void)
 /*******************************************************************************
  * 					    DMA Interrupt Service Routine - End
  *******************************************************************************/
+#endif
+
+/* Part 2 Demo */
+#else
+int main(void)
+{
+  	/* Init board hardware. */
+    BOARD_InitBootPins();
+    BOARD_InitBootClocks();
+    BOARD_InitBootPeripherals();
+    BOARD_InitDebugConsole();
+	/* Local Variables */
+    uint16_t ADC_in, mVolts;
+	/* Configure ADC0 */
+	ADC0_init();
+	/* Configure D15*/
+	gpio_config();
+
+while (1)
+	{
+		/************************************
+		 * Set AIEN to 1 to enable interrupt
+		 * Set DIFF to 0b0 for single
+		 * Set ADCH to 0b00000 for ADC_SE0
+		 * Set register to 0x40
+		 **********************************/
+	ADC0->SC1[0] = 0x40;
+	while(!(ADC0->SC1[0] & 0x80))
+	{
+		/* Toggle PTE1 LED */
+    	PTE->PTOR |= 0x02;
+	}
+	/* Write to register */
+	ADC_in = ADC0->R[0];
+	/* Analog Input in V */
+	mVolts = ((ADC_in*3.3*1000)/RESOLUTION);
+	delay(250);
+	printf("Voltage: %d mV\r", mVolts);
+	}
+}
 #endif
