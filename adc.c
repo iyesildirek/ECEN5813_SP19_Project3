@@ -13,16 +13,13 @@
 * @brief This source file contains a c program to implement a DMA functions.
 *
 * @authors: Ismail Yesildirek, Bijan Kianian
-* @date April 25 2019
-* @version 1.2
+* @date April 27 2019
+* @version 1.3
 *
 */
 
 /*==================================================================*/
-
 #include "adc.h"
-#include "dma.h"
-
 /*==================================================================*/
 
 /*########################## ADC0_init() - Start ##########################*/
