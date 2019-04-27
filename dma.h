@@ -30,15 +30,15 @@
 /*******************************************************************************
  * 									Definitions
  ******************************************************************************/
-#define DOUBLE_BUFFER 1
+#define DOUBLE_BUFFER 0
 
 #if !DOUBLE_BUFFER
-
-#define DESTINATION_BUFF_LENGTH 3477
+/* Max value of 3477 */
+#define DESTINATION_BUFF_LENGTH 256
 
 #else
-
-#define DESTINATION_BUFF_LENGTH 1738
+/* Max value of 1738 */
+#define DESTINATION_BUFF_LENGTH 128
 
 #endif
 
