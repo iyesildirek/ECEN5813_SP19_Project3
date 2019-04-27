@@ -14,7 +14,7 @@
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
 * @date April 27 2019
-* @version 1.5
+* @version 1.6
 *
 */
 
@@ -55,6 +55,13 @@ int main(void)
     gpio_config();
 
     uint32_t mVolts;
+    uint32_t peak_value1;
+
+#if DOUBLE_BUFFER
+
+    uint32_t peak_value2;		// Peak values for each buffer
+
+#endif
     uint32_t i = 0;
     uint32_t numOfBytes = 4 * DESTINATION_BUFF_LENGTH;		// 4 bytes per transfer (x32 bits)
 
@@ -107,6 +114,9 @@ int main(void)
 				mVolts = (*(Buffer_1+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
 				mem_display((uint32_t*)Buffer_1,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
 			}
+
+			peak_value1 = PeakLevel(Buffer_1, DESTINATION_BUFF_LENGTH);
+			printf("\n\r Peak Level for Buffer 1: %d", peak_value1);
     	}
 
 #if DOUBLE_BUFFER
@@ -127,6 +137,9 @@ int main(void)
 				mVolts = (*(Buffer_2+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
 				mem_display((uint32_t*)Buffer_2,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
 			}
+
+			peak_value2 = PeakLevel(Buffer_2, DESTINATION_BUFF_LENGTH);
+			printf("\n\r Peak Level for Buffer 2: %d", peak_value2);
     	}
 
     	printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
@@ -138,11 +151,6 @@ int main(void)
 		}
     }
 
-    /* Free up memory allocations before closing */
-
-    free(Buffer_2);
-    free(Buffer_1);
-
 #else
 
 		printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
@@ -153,8 +161,6 @@ int main(void)
 			break;
 		}
 	}
-
-    free(Buffer_1);
 
 #endif
 
