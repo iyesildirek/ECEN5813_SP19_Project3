@@ -14,13 +14,14 @@
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
 * @date April 27 2019
-* @version 1.6
+* @version 1.5
 *
 */
 
 #include "dma.h"
 #include "adc.h"
 #include "mem_display.h"
+#include "Application.h"
 
 /******************************************************************************
  * 			Variables used by DMA driver  fsl_dma driver ver 2.0.1
@@ -116,14 +117,14 @@ int main(void)
 			}
 
 			peak_value1 = PeakLevel(Buffer_1, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 1: %d\n", peak_value1);
+			printf("\n\r Peak Level for Buffer 1: %d", peak_value1);
     	}
 
 #if DOUBLE_BUFFER
 
     	else
     	{
-			printf("\nBuffer 2:\n\r");
+			printf("Buffer 2:\n\r");
 			printf("========\n\r");
 			printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
 			printf("\r -----	------------    -------------    ----------   -------------- \n");
@@ -139,8 +140,10 @@ int main(void)
 			}
 
 			peak_value2 = PeakLevel(Buffer_2, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 2: %d\n", peak_value2);
+			printf("\n\r Peak Level for Buffer 2: %d", peak_value2);
     	}
+
+#if !FREE_RUNNING
 
     	printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
 
@@ -149,7 +152,8 @@ int main(void)
 			printf("\n\rGood Bye!\n\n\r");
 			break;
 		}
-        
+#endif
+
     }
 
 #else
