@@ -116,14 +116,14 @@ int main(void)
 			}
 
 			peak_value1 = PeakLevel(Buffer_1, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 1: %d", peak_value1);
+			printf("\n\r Peak Level for Buffer 1: %d\n", peak_value1);
     	}
 
 #if DOUBLE_BUFFER
 
     	else
     	{
-			printf("Buffer 2:\n\r");
+			printf("\nBuffer 2:\n\r");
 			printf("========\n\r");
 			printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
 			printf("\r -----	------------    -------------    ----------   -------------- \n");
@@ -139,9 +139,11 @@ int main(void)
 			}
 
 			peak_value2 = PeakLevel(Buffer_2, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 2: %d", peak_value2);
+			printf("\n\r Peak Level for Buffer 2: %d\n", peak_value2);
     	}
 
+        if(Swap_Buffers == true)
+        {
     	printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
 
     	if(getchar() == 'x')
@@ -149,6 +151,7 @@ int main(void)
 			printf("\n\rGood Bye!\n\n\r");
 			break;
 		}
+        }
     }
 
 #else
