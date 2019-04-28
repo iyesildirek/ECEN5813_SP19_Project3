@@ -13,8 +13,8 @@
 * @brief This header file provides the adc prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 23 2019
-* @version 1.1
+* @date April 27 2019
+* @version 1.2
 *
 */
 
@@ -34,3 +34,5 @@
   void gpio_config(void);
   uint32_t ADC_Read(void);
   void led(void);
+  uint32_t PeakLevel (uint32_t*, uint16_t);
+  uint32_t decay(uint32_t );
