@@ -22,12 +22,21 @@
 
 #include "Application.h"
 
+static table vlookup[] =
+{
+		{0, 65536},
+		{-3, 46334},
+		{-6,32768},
+		{-10,20709},
+		{-20, 6554},
+		{-50, 0}
+} ;
+
 /*=======================================================================*/
 
 /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ PeakLevel () - Start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
 
 uint32_t PeakLevel (uint32_t* buffer, uint16_t size)
-
 {
 	uint32_t current, peak, temp;
 	peak = *buffer;
@@ -59,3 +68,37 @@ uint32_t decay(uint32_t num)
 
 /*********************************** deacy () - End *******************************/
 
+/*********************************** dB () - Start *******************************/
+int32_t deciBel(uint32_t peak)
+{
+	int32_t dB, mid, mid2, mid_loop_top,mid_loop_bot;
+	/* midpoint between 0 and 3dB */
+	mid = ((vlookup[0].sample-vlookup[1].sample)>>1)+vlookup[1].sample;
+	/* midpoint between -20 and -50dB */
+	mid2 = (vlookup[4].sample-vlookup[5].sample)>>1;
+	
+	if (peak >= mid)
+	{
+		dB = vlookup[0].db_Value;
+	}
+	else if((peak < mid) && (peak > mid2) ) 
+	{
+		for (uint8_t i=1; i<LOOKUP_SIZE-2; i++)
+		{
+			mid_loop_top = ((vlookup[i-1].sample-vlookup[i].sample)>>1)+vlookup[i].sample;
+			mid_loop_bot = ((vlookup[i].sample-vlookup[i+1].sample)>>1)+vlookup[i+1].sample;
+			
+		if ((peak < mid_loop_top) && (peak >= mid_loop_bot))
+			{
+			dB = vlookup[i].db_Value;
+			}
+		}
+	}
+	else
+	{
+		dB = vlookup[5].db_Value;
+	}
+	return dB;
+}
+
+/*********************************** dB () - End *******************************/
