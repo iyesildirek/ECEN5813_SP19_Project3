@@ -10,7 +10,7 @@
 *****************************************************************************/
 /**
 * @file Applications.c
-* @brief This header file provides the adc prototypes and include files.
+* @brief This header file provides the peak detector prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
 * @date April 27 2019
@@ -20,8 +20,7 @@
 
 /*=======================================================================*/
 
-#include "dma.h"
-#include "adc.h"
+#include "Application.h"
 
 /*=======================================================================*/
 
@@ -53,7 +52,8 @@ uint32_t PeakLevel (uint32_t* buffer, uint16_t size)
 
 uint32_t decay(uint32_t num)
 {
-	uint32_t result = num >> 2 ;	// Arbitrarily Selecting Alpha 1 / 2^2 (0.25)
+
+	uint32_t result = num  *COEF;
 	return result;
 }
 
