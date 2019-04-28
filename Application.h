@@ -19,7 +19,8 @@
 */
 
 #include "dma.h"
-#define COEF 1
+#define COEF 122
+#define SHIFT 7
 
 /*******Function Prototypes*******/
   uint32_t PeakLevel (uint32_t*, uint16_t);

@@ -53,7 +53,7 @@ uint32_t PeakLevel (uint32_t* buffer, uint16_t size)
 uint32_t decay(uint32_t num)
 {
 
-	uint32_t result = num  >> COEF;
+	uint32_t result = num * COEF >> SHIFT ;
 	return result;
 }
 
