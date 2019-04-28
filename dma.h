@@ -31,7 +31,7 @@
  * 									Definitions
  ******************************************************************************/
 #define DOUBLE_BUFFER 1
-#define FREE_RUNNING 1						/* Continuous running for demo and report */
+#define FREE_RUNNING 0						/* Continuous running for demo and report */
 
 
 #if !DOUBLE_BUFFER
