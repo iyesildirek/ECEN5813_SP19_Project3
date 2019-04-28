@@ -31,6 +31,6 @@ typedef struct
 }table;
 
 /*******Function Prototypes*******/
-  uint32_t PeakLevel (uint32_t *buffer, uint16_t size);
-  uint32_t decay(uint32_t num);
-  int32_t deciBel(uint32_t peak);
+  uint32_t PeakLevel (uint32_t *, uint16_t );
+  uint32_t decay(uint32_t );
+  int32_t deciBel(uint32_t );
