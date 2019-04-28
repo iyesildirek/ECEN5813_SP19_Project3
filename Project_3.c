@@ -142,8 +142,6 @@ int main(void)
 			printf("\n\r Peak Level for Buffer 2: %d\n", peak_value2);
     	}
 
-        if(Swap_Buffers == true)
-        {
     	printf("\n\rPress 'x' to exit, or any other key to continue...\n\n\r");
 
     	if(getchar() == 'x')
@@ -151,7 +149,7 @@ int main(void)
 			printf("\n\rGood Bye!\n\n\r");
 			break;
 		}
-        }
+        
     }
 
 #else
