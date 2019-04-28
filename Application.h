@@ -19,7 +19,7 @@
 */
 
 #include "dma.h"
-#define COEF 0.95
+#define COEF 1
 
 /*******Function Prototypes*******/
   uint32_t PeakLevel (uint32_t*, uint16_t);
