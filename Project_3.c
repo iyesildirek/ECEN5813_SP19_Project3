@@ -14,7 +14,7 @@
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
 * @date April 27 2019
-* @version 1.5
+* @version 1.6
 *
 */
 
@@ -115,9 +115,10 @@ int main(void)
 				mVolts = (*(Buffer_1+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
 				mem_display((uint32_t*)Buffer_1,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
 			}
-
 			peak_value1 = PeakLevel(Buffer_1, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 1: %d\n\n\r", peak_value1);
+			
+			printf("\n\r Peak Level for Buffer 1: %d\n", peak_value1);
+			printf("\n\r dB Level for Buffer 1: %d dBFS\n\r", deciBel(peak_value1));
     	}
 
 #if DOUBLE_BUFFER
@@ -138,9 +139,10 @@ int main(void)
 				mVolts = (*(Buffer_2+i)*3.3*1000)/RESOLUTION;	/* Analog Input in mV */
 				mem_display((uint32_t*)Buffer_2,(uint32_t)DESTINATION_BUFF_LENGTH, mVolts, i);
 			}
-
 			peak_value2 = PeakLevel(Buffer_2, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 2: %d\n\n\r", peak_value2);
+			
+			printf("\n\r Peak Level for Buffer 2: %d\n", peak_value2);
+			printf("\n\r dB Level for Buffer 2: %d dBFS\n\r", deciBel(peak_value2));
     	}
 
 #if !FREE_RUNNING
