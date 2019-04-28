@@ -9,28 +9,18 @@
 *
 *****************************************************************************/
 /**
-* @file adc.h
+* @file Application.h
 * @brief This header file provides the adc prototypes and include files.
 *
 * @authors: Ismail Yesildirek & Bijan Kianian
-* @date April 27 2019
-* @version 1.2
+* @date April 28 2019
+* @version 1.0
 *
 */
 
-/*==================================================================*/
-
 #include "dma.h"
-
-/*==================================================================*/
-
-/* Number of steps in 16 bits */
-#define RESOLUTION 65536
-
+#define COEF 0.95
 
 /*******Function Prototypes*******/
-  void ADC0_init(void);
-  void delay (uint16_t);
-  void gpio_config(void);
-  uint32_t ADC_Read(void);
-  void led(void);
+  uint32_t PeakLevel (uint32_t*, uint16_t);
+  uint32_t decay(uint32_t );
