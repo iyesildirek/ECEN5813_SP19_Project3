@@ -31,6 +31,8 @@
  * 									Definitions
  ******************************************************************************/
 #define DOUBLE_BUFFER 1
+#define FREE_RUNNING 1						/* Continuous running for demo and report */
+
 
 #if !DOUBLE_BUFFER
 /* Max value of 3477 */
@@ -38,7 +40,7 @@
 
 #else
 /* Max value of 1738 */
-#define DESTINATION_BUFF_LENGTH 5
+#define DESTINATION_BUFF_LENGTH 8
 
 #endif
 

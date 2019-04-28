@@ -101,8 +101,8 @@ int main(void)
 			printf("\r\t\t#    ADC to memory transfer via DMA.   #\n");  /* Print destination buffer */
 			printf("\r\t\t########################################\r\n\n");
 
-			printf("Buffer 1:\n\r");
-			printf("========\n\r");
+			printf(" Buffer 1:\n\r");
+			printf(" ========\n\r");
 			printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
 			printf("\r -----	------------    -------------    ----------   -------------- \n");
 
@@ -117,15 +117,15 @@ int main(void)
 			}
 
 			peak_value1 = PeakLevel(Buffer_1, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 1: %d", peak_value1);
+			printf("\n\r Peak Level for Buffer 1: %d\n\n\r", peak_value1);
     	}
 
 #if DOUBLE_BUFFER
 
     	else
     	{
-			printf("Buffer 2:\n\r");
-			printf("========\n\r");
+			printf(" Buffer 2:\n\r");
+			printf(" ========\n\r");
 			printf("\n Index 	  Address         Value(h)        Value(d)     voltage (mV)\n");
 			printf("\r -----	------------    -------------    ----------   -------------- \n");
 
@@ -140,7 +140,7 @@ int main(void)
 			}
 
 			peak_value2 = PeakLevel(Buffer_2, DESTINATION_BUFF_LENGTH);
-			printf("\n\r Peak Level for Buffer 2: %d", peak_value2);
+			printf("\n\r Peak Level for Buffer 2: %d\n\n\r", peak_value2);
     	}
 
 #if !FREE_RUNNING
