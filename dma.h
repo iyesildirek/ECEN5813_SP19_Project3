@@ -40,7 +40,7 @@
 
 #else
 /* Max value of 1738 */
-#define DESTINATION_BUFF_LENGTH 8
+#define DESTINATION_BUFF_LENGTH 128
 
 #endif
 
